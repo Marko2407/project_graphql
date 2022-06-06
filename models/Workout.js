@@ -1,15 +1,8 @@
 const mongoose = require('mongoose')
 
-const days = {
-    Monday: "Monday" , Tuesday: "Tuesday", Wednesday: "Wednesday", Thursday : "Thursday", Friday: "Friday"
-}
-
-
 const WorkoutSchema = new mongoose.Schema({
     day:{
-        type: String,
-        enum: days,
-        default: days.Monday
+        type: String
     },
     title:{
         type: String,
@@ -19,8 +12,8 @@ const WorkoutSchema = new mongoose.Schema({
         type: String
     },
     dateCreated:{
-        type: String,
-        default: new Date(Date.now).toLocaleDateString
+        type: Date,
+        default: new Date(Date.now)
     }
 })
 

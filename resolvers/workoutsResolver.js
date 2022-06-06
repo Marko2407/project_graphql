@@ -1,5 +1,17 @@
 const Workout = require('../models/Workout')
 
+const daysInWeek = [
+    "Sunday", "Monday" , "Tuesday",  "Wednesday", "Thursday", "Friday", "Saturday"
+]
+
+const isValidDate = (d) => {
+    return d instanceof Date && !isNaN(d);
+  }
+
+const removeTime = (date) =>{
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}  
+
 const resolvers = {
     Query:{
         getAllWorkouts: async()=> {
@@ -11,27 +23,56 @@ const resolvers = {
         },
 
         getWorkoutByDate: async (parent, args, context, info) => {
-            console.log(args.date);
-            date = new Date(args.date).toLocaleDateString()
+            const date =removeTime(new Date(args.date))
+            if(!isValidDate(date)) return []
             const workouts = await Workout.find({ 'dateCreated' : date})
             return workouts
-        }
+        },
+        getWorkoutByDateRange: async(parent, args, context, info) => {
+            let beforeDate = removeTime(new Date(args.before))
+                let afterDate  = removeTime(new Date(args.after))
+                if(!isValidDate(beforeDate)){
+                    beforeDate = removeTime(new Date(Date.now())) 
+                }
+                if(!isValidDate(afterDate)){
+                    afterDate = removeTime(new Date(Date.now())) 
+                }
+               
+                const workouts = await Workout.find({
+                     "dateCreated": {$gte: beforeDate, $lte: afterDate }
+                  })
+                  return workouts
+        },
+        getWorkoutForCurrentWeek: async(parent, args, context, info) => {
+            var curr = new Date;
+            var firstday =removeTime(new Date(curr.setDate(curr.getDate() - curr.getDay()+ 1)))
+            var lastday = removeTime(new Date(curr.setDate(curr.getDate() - curr.getDay()+7)))
+            console.log(firstday);
+            console.log(lastday);
+                const workouts = await Workout.find({
+                     "dateCreated": {$gte: firstday, $lte: lastday }
+                  }).sort({  "dateCreated": +1 })
+                  return workouts
+        },
     }, 
 
     Mutation:{
         createWorkout: async (parent, args, context, info) => {
-            let date = new Date(Date.now()).toLocaleDateString()
+            let date = new Date(Date.now())
 
             if(args.dateCreated != null){
                 date =  new Date(args.dateCreated)
-                if(date != Date){
-                    date = new Date(Date.now()).toLocaleDateString()
+                if((!isValidDate(date))){
+                    date = new Date(Date.now())
                 }
             }
+            
+            const dayt = daysInWeek.at(date.getDay())
 
-            console.log(d);
+            date = removeTime(date)
+
             const {day, title, description, dateCreated} = args  
-            const workout = new Workout({day, title: title, description:  description,  dateCreated: date})
+            const workout = new Workout({day: dayt, title: title, description:  description,  dateCreated: date})
             await workout.save()
             return workout
         }, 

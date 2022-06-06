@@ -14,6 +14,8 @@ type Query{
     getAllWorkouts:[Workout]
     getWorkoutById(id: ID): Workout
     getWorkoutByDate(date: String): [Workout]
+    getWorkoutByDateRange(before: String, after: String): [Workout]
+    getWorkoutForCurrentWeek: [Workout]
 }
 
 type Mutation {

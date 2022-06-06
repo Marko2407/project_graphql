@@ -83,6 +83,7 @@ const resolvers = {
             return true
         },
 
+    //fix update
         updateWorkout: async(paret, args, context, info) => {
             const{id} = args
             const {title} = args

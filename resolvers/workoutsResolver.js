@@ -76,7 +76,8 @@ const resolvers = {
             await workout.save()
             return workout
         }, 
-
+        
+//fix delete
         deleteWorkout: async (paret, args, context, info) => {
             const{ id} = args
             await Workout.findByIdAndDelete(id)

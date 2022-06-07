@@ -23,7 +23,7 @@ const resolvers = {
         },
 
         getWorkoutByDate: async (parent, args, context, info) => {
-            const date =removeTime(new Date(args.date))
+            const date = removeTime(new Date(args.date))
             if(!isValidDate(date)) return []
             const workouts = await Workout.find({ 'dateCreated' : date})
             return workouts
@@ -53,6 +53,10 @@ const resolvers = {
                      "dateCreated": {$gte: firstday, $lte: lastday }
                   }).sort({  "dateCreated": +1 })
                   return workouts
+        },
+
+        getWorkoutBySearchTerms: async(parent, args, context, info) => {
+            return await Workout.find( { 'title' : { '$regex' : args.title , '$options' : 'i' } } )
         },
     }, 
 

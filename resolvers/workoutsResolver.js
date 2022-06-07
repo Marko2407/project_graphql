@@ -55,7 +55,7 @@ const resolvers = {
                   return workouts
         },
 
-        getWorkoutBySearchTerms: async(parent, args, context, info) => {
+        getWorkoutBySearchInput: async(parent, args, context, info) => {
             return await Workout.find( { 'title' : { '$regex' : args.title , '$options' : 'i' } } )
         },
     }, 

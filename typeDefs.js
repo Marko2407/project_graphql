@@ -21,7 +21,7 @@ type Query{
 type Mutation {
     createWorkout(day: String, title: String, description: String, dateCreated: String): Workout
     deleteWorkout(id: ID): Boolean
-    updateWorkout(id: ID, title: String, description: String): Workout
+    updateWorkout(id: ID, title: String, description: String, dateCreated: String): Workout
 }
 
 `;

@@ -76,19 +76,18 @@ const resolvers = {
             await workout.save()
             return workout
         }, 
-        
-//fix delete
+
         deleteWorkout: async (paret, args, context, info) => {
             const{ id} = args
             await Workout.findByIdAndDelete(id)
             return true
         },
 
-    //fix update
         updateWorkout: async(paret, args, context, info) => {
             const{id} = args
             const {title} = args
             const {description} = args
+            const{dateCreated} = args
             const updates = {}
             if(title !== undefined){
                 updates.title = title
@@ -96,7 +95,12 @@ const resolvers = {
             if(description !==undefined){
                 updates.description = description
             }
-            const workout = await Workout.findByIdAndUpdate(id, {title, description},{new: true})
+            if(dateCreated !== undefined){
+                updates.dateCreated = removeTime(new Date(dateCreated))
+                updates.day =  daysInWeek.at(updates.dateCreated.getDay())
+            }
+
+            const workout = await Workout.findByIdAndUpdate(id, updates,{new: true})
             return workout
         },
     }

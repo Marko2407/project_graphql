@@ -16,6 +16,5 @@ const WorkoutSchema = new mongoose.Schema({
         default: new Date(Date.now)
     }
 })
-
 const Workout = mongoose.model('workout', WorkoutSchema)
 module.exports = Workout

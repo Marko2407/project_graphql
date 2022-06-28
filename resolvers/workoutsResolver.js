@@ -1,4 +1,5 @@
 const Workout = require('../models/Workout')
+const WeeklyWorkouts = require('../models/WeeklyWorkouts')
 
 const daysInWeek = [
     "Sunday", "Monday" , "Tuesday",  "Wednesday", "Thursday", "Friday", "Saturday"
@@ -12,23 +13,106 @@ const removeTime = (date) =>{
     return new Date(date.getFullYear(), date.getMonth(), date.getDate())
 }  
 
+const filterWorkoutByDay = (workout, day) => {
+    return workout.filter(workout => workout.day == day)
+}
+
+const mappWorkouts = (monday, tuesday, wednesday, thursday,friday, saturday, sunday) => {
+   return [WeeklyWorkouts({
+        day: daysInWeek.at(1),
+        workouts: monday
+        }),
+         WeeklyWorkouts({
+        day: daysInWeek.at(2),
+        workouts: tuesday
+        }),
+        WeeklyWorkouts({
+        day: daysInWeek.at(3),
+        workouts: wednesday
+        }),
+        WeeklyWorkouts({
+        day: daysInWeek.at(4),
+        workouts: thursday
+        }),
+        WeeklyWorkouts({
+        day: daysInWeek.at(5),
+        workouts: friday
+        }),
+        WeeklyWorkouts({
+        day: daysInWeek.at(6),
+        workouts: saturday
+        }),
+        WeeklyWorkouts({
+        day: daysInWeek.at(0),
+        workouts: sunday
+        })]
+}
+
 const resolvers = {
     Query:{
         getAllWorkouts: async()=> {
            const workout = await Workout.find()
         return workout
         },
+
+        getCurrentWeekWorkouts: async()=> {
+            const today = removeTime(new Date());
+
+            const firstDay = new Date(today.setDate(today.getDate() - today.getDay()+1)) // Monday
+            const lastDay = new Date(today.setDate(today.getDate() - today.getDay() + 7)) // Sunday
+        
+            const workout = await Workout.find({
+                "dateCreated": {$gte: firstDay, $lte: lastDay }
+             })
+            const sunday = filterWorkoutByDay(workout, daysInWeek.at(0))
+            const monday =  filterWorkoutByDay(workout, daysInWeek.at(1))
+            const tuesday = filterWorkoutByDay(workout, daysInWeek.at(2))
+            const wednesday = filterWorkoutByDay(workout, daysInWeek.at(3))
+            const thursday = filterWorkoutByDay(workout, daysInWeek.at(4))
+            const friday = filterWorkoutByDay(workout, daysInWeek.at(5))
+            const saturday =filterWorkoutByDay(workout, daysInWeek.at(6))
+
+            const weeklyWorkout = mappWorkouts(monday,tuesday, wednesday, thursday, friday, saturday, sunday)
+
+         return weeklyWorkout
+         },
+
+         getWeeklykWorkoutsByDate: async(_parent, args, _context, _info)=> {
+            
+            const today = removeTime(new Date(args.date))
+            if(!isValidDate(today)) return []
+            console.log(today)
+            const firstDay = new Date(today.setDate(today.getDate() - today.getDay()+1)) // Monday
+            const lastDay = new Date(today.setDate(today.getDate() - today.getDay() + 7)) // Sunday
+
+            const workout = await Workout.find({
+                "dateCreated": {$gte: firstDay, $lte: lastDay }
+             })
+             
+            const sunday = filterWorkoutByDay(workout, daysInWeek.at(0))
+            const monday =  filterWorkoutByDay(workout, daysInWeek.at(1))
+            const tuesday = filterWorkoutByDay(workout, daysInWeek.at(2))
+            const wednesday = filterWorkoutByDay(workout, daysInWeek.at(3))
+            const thursday = filterWorkoutByDay(workout, daysInWeek.at(4))
+            const friday = filterWorkoutByDay(workout, daysInWeek.at(5))
+            const saturday = filterWorkoutByDay(workout, daysInWeek.at(6))
+
+            const weeklyWorkout = mappWorkouts(monday,tuesday, wednesday, thursday, friday, saturday, sunday)
+
+         return weeklyWorkout
+         },
+        
         getWorkoutById: async(_parent, {id}, _context, _info)=>{
             return await Workout.findById(id)
         },
 
-        getWorkoutByDate: async (parent, args, context, info) => {
+        getWorkoutByDate: async (_parent, args, _context, _info) => {
             const date = removeTime(new Date(args.date))
             if(!isValidDate(date)) return []
             const workouts = await Workout.find({ 'dateCreated' : date})
             return workouts
         },
-        getWorkoutByDateRange: async(parent, args, context, info) => {
+        getWorkoutByDateRange: async(_parent, args, _context, _info) => {
             let beforeDate = removeTime(new Date(args.before))
                 let afterDate  = removeTime(new Date(args.after))
                 if(!isValidDate(beforeDate)){
@@ -43,7 +127,7 @@ const resolvers = {
                   })
                   return workouts
         },
-        getWorkoutForCurrentWeek: async(parent, args, context, info) => {
+        getAllWorkoutForCurrentWeek: async(_parent, _args, _context, _info) => {
             var curr = new Date;
             var firstday =removeTime(new Date(curr.setDate(curr.getDate() - curr.getDay()+ 1)))
             var lastday = removeTime(new Date(curr.setDate(curr.getDate() - curr.getDay()+7)))
@@ -55,7 +139,7 @@ const resolvers = {
                   return workouts
         },
 
-        getWorkoutBySearchInput: async(parent, args, context, info) => {
+        getWorkoutBySearchInput: async(_parent, args, _context, _info) => {
            return await Workout.find({ $or : [
                 { 'title':{ '$regex': args.title , '$options': 'i' } },
                 { 'description': { '$regex': args.title , '$options': 'i' } },
@@ -64,7 +148,7 @@ const resolvers = {
     }, 
 
     Mutation:{
-        createWorkout: async (parent, args, context, info) => {
+        createWorkout: async (_parent, args, _context, _info) => {
             let date = new Date(Date.now())
 
             if(args.dateCreated != null){
@@ -84,13 +168,13 @@ const resolvers = {
             return workout
         }, 
 
-        deleteWorkout: async (paret, args, context, info) => {
+        deleteWorkout: async (_paret, args, _context, _info) => {
             const{ id} = args
             await Workout.findByIdAndDelete(id)
             return true
         },
 
-        updateWorkout: async(paret, args, context, info) => {
+        updateWorkout: async(_paret, args, _context, _info) => {
             const{id} = args
             const {title} = args
             const {description} = args

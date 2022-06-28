@@ -10,12 +10,19 @@ type Workout{
     dateCreated: String
 }
 
+type WeeklyWorkouts{
+    day: String
+    workouts: [Workout]
+}
+
 type Query{
     getAllWorkouts:[Workout]
+    getCurrentWeekWorkouts:[WeeklyWorkouts]
+    getWeeklykWorkoutsByDate(date: String):[WeeklyWorkouts]
     getWorkoutById(id: ID): Workout
     getWorkoutByDate(date: String): [Workout]
     getWorkoutByDateRange(before: String, after: String): [Workout]
-    getWorkoutForCurrentWeek: [Workout]
+    getAllWorkoutForCurrentWeek: [Workout]
     getWorkoutBySearchInput(title: String): [Workout]
 }
 

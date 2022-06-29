@@ -16,5 +16,5 @@ To start mongodb/brew/mongodb-community now and restart at login:
 Or, if you don't want/need a background service you can just run:
   mongod --config /opt/homebrew/etc/mongod.conf
 
-
+You need to have all instaled before run dev 
 To start localHost in terminal write npm run dev and then go to browser and in url type localHost:4000/graphql

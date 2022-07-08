@@ -34,31 +34,31 @@ const mapWorkouts = (
 ) => {
   return [
     WeeklyWorkouts({
-      day: daysInWeek.at(1),
+      day: daysInWeek[1],
       workouts: monday,
     }),
     WeeklyWorkouts({
-      day: daysInWeek.at(2),
+      day: daysInWeek[2],
       workouts: tuesday,
     }),
     WeeklyWorkouts({
-      day: daysInWeek.at(3),
+      day: daysInWeek[3],
       workouts: wednesday,
     }),
     WeeklyWorkouts({
-      day: daysInWeek.at(4),
+      day: daysInWeek[4],
       workouts: thursday,
     }),
     WeeklyWorkouts({
-      day: daysInWeek.at(5),
+      day: daysInWeek[5],
       workouts: friday,
     }),
     WeeklyWorkouts({
-      day: daysInWeek.at(6),
+      day: daysInWeek[6],
       workouts: saturday,
     }),
     WeeklyWorkouts({
-      day: daysInWeek.at(0),
+      day: daysInWeek[0],
       workouts: sunday,
     }),
   ];
@@ -84,13 +84,13 @@ const resolvers = {
       const workout = await Workout.find({
         dateCreated: { $gte: firstDay, $lte: lastDay },
       });
-      const sunday = filterWorkoutByDay(workout, daysInWeek.at(0));
-      const monday = filterWorkoutByDay(workout, daysInWeek.at(1));
-      const tuesday = filterWorkoutByDay(workout, daysInWeek.at(2));
-      const wednesday = filterWorkoutByDay(workout, daysInWeek.at(3));
-      const thursday = filterWorkoutByDay(workout, daysInWeek.at(4));
-      const friday = filterWorkoutByDay(workout, daysInWeek.at(5));
-      const saturday = filterWorkoutByDay(workout, daysInWeek.at(6));
+      const sunday = filterWorkoutByDay(workout, daysInWeek[0]);
+      const monday = filterWorkoutByDay(workout, daysInWeek[1]);
+      const tuesday = filterWorkoutByDay(workout, daysInWeek[2]);
+      const wednesday = filterWorkoutByDay(workout, daysInWeek[3]);
+      const thursday = filterWorkoutByDay(workout, daysInWeek[4]);
+      const friday = filterWorkoutByDay(workout, daysInWeek[5]);
+      const saturday = filterWorkoutByDay(workout, daysInWeek[6]);
 
       const weeklyWorkout = mapWorkouts(
         monday,
@@ -120,13 +120,13 @@ const resolvers = {
         dateCreated: { $gte: firstDay, $lte: lastDay },
       });
 
-      const sunday = filterWorkoutByDay(workout, daysInWeek.at(0));
-      const monday = filterWorkoutByDay(workout, daysInWeek.at(1));
-      const tuesday = filterWorkoutByDay(workout, daysInWeek.at(2));
-      const wednesday = filterWorkoutByDay(workout, daysInWeek.at(3));
-      const thursday = filterWorkoutByDay(workout, daysInWeek.at(4));
-      const friday = filterWorkoutByDay(workout, daysInWeek.at(5));
-      const saturday = filterWorkoutByDay(workout, daysInWeek.at(6));
+      const sunday = filterWorkoutByDay(workout, daysInWeek[0]);
+      const monday = filterWorkoutByDay(workout, daysInWeek[1]);
+      const tuesday = filterWorkoutByDay(workout, daysInWeek[2]);
+      const wednesday = filterWorkoutByDay(workout, daysInWeek[3]);
+      const thursday = filterWorkoutByDay(workout, daysInWeek[4]);
+      const friday = filterWorkoutByDay(workout, daysInWeek[5]);
+      const saturday = filterWorkoutByDay(workout, daysInWeek[6]);
 
       const weeklyWorkout = mapWorkouts(
         monday,
@@ -247,7 +247,7 @@ const resolvers = {
       }
       if (dateCreated !== undefined) {
         updates.dateCreated = removeTime(new Date(dateCreated));
-        updates.day = daysInWeek.at(updates.dateCreated.getDay());
+        updates.day = daysInWeek[updates.dateCreated.getDay()];
       }
 
       const workout = await Workout.findByIdAndUpdate(id, updates, {

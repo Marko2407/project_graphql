@@ -23,6 +23,7 @@ type Query{
     getWeeklykWorkoutsByDate(date: String):[WeeklyWorkouts]
     getWorkoutById(id: ID): Workout
     getWorkoutByDate(date: String): [Workout]
+    getTodayWorkouts: [Workout]
     getWorkoutByDateRange(before: String, after: String): [Workout]
     getAllWorkoutForCurrentWeek: [Workout]
     getWorkoutBySearchInput(title: String): [Workout]

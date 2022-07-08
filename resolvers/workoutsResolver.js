@@ -112,6 +112,13 @@ const resolvers = {
             const workouts = await Workout.find({ 'dateCreated' : date})
             return workouts
         },
+
+        getTodayWorkouts: async (_parent, args, _context, _info) => {
+            const date = removeTime(new Date())
+            if(!isValidDate(date)) return []
+            const workouts = await Workout.find({ 'dateCreated' : date})
+            return workouts
+        },
         getWorkoutByDateRange: async(_parent, args, _context, _info) => {
             let beforeDate = removeTime(new Date(args.before))
                 let afterDate  = removeTime(new Date(args.after))

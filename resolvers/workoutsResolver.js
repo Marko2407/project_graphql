@@ -17,7 +17,7 @@ const filterWorkoutByDay = (workout, day) => {
     return workout.filter(workout => workout.day == day)
 }
 
-const mappWorkouts = (monday, tuesday, wednesday, thursday,friday, saturday, sunday) => {
+const mapWorkouts = (monday, tuesday, wednesday, thursday,friday, saturday, sunday) => {
    return [WeeklyWorkouts({
         day: daysInWeek.at(1),
         workouts: monday
@@ -72,7 +72,7 @@ const resolvers = {
             const friday = filterWorkoutByDay(workout, daysInWeek.at(5))
             const saturday =filterWorkoutByDay(workout, daysInWeek.at(6))
 
-            const weeklyWorkout = mappWorkouts(monday,tuesday, wednesday, thursday, friday, saturday, sunday)
+            const weeklyWorkout = mapWorkouts(monday,tuesday, wednesday, thursday, friday, saturday, sunday)
 
          return weeklyWorkout
          },
@@ -97,7 +97,7 @@ const resolvers = {
             const friday = filterWorkoutByDay(workout, daysInWeek.at(5))
             const saturday = filterWorkoutByDay(workout, daysInWeek.at(6))
 
-            const weeklyWorkout = mappWorkouts(monday,tuesday, wednesday, thursday, friday, saturday, sunday)
+            const weeklyWorkout = mapWorkouts(monday,tuesday, wednesday, thursday, friday, saturday, sunday)
 
          return weeklyWorkout
          },
@@ -162,8 +162,8 @@ const resolvers = {
 
             date = removeTime(date)
 
-            const {day, title, description, dateCreated} = args  
-            const workout = new Workout({day: dayt, title: title, description:  description,  dateCreated: date})
+            const {day, title, description, dateCreated, reps, series} = args  
+            const workout = new Workout({day: dayt, title: title, description:  description,  dateCreated: date, reps: reps, series: series})
             await workout.save()
             return workout
         }, 

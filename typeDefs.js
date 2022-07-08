@@ -8,6 +8,8 @@ type Workout{
     title: String
     description: String
     dateCreated: String
+    series: Int
+    reps: Int
 }
 
 type WeeklyWorkouts{
@@ -27,7 +29,7 @@ type Query{
 }
 
 type Mutation {
-    createWorkout(day: String, title: String, description: String, dateCreated: String): Workout
+    createWorkout(day: String, title: String, description: String, dateCreated: String, reps: Int, series: Int): Workout
     deleteWorkout(id: ID): Boolean
     updateWorkout(id: ID, title: String, description: String, dateCreated: String): Workout
 }

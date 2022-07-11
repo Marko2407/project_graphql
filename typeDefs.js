@@ -34,8 +34,6 @@ type Mutation {
     createWorkout(day: String, title: String, description: String, dateCreated: String, reps: Int, series: Int): Workout
     deleteWorkout(id: ID): Boolean
     updateWorkout(id: ID, title: String, description: String, dateCreated: String): Workout
-}
-
-`;
+}`;
 
 module.exports = typeDefs;

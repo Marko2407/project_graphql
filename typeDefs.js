@@ -26,7 +26,8 @@ type Query{
     getTodayWorkouts: [Workout]
     getWorkoutByDateRange(before: String, after: String): [Workout]
     getAllWorkoutForCurrentWeek: [Workout]
-    getWorkoutBySearchInput(title: String): [Workout]
+    getWorkoutBySearchInput(title: String): [Workout],
+    getWorkoutForSelectedWeek(weeklyOffset: Int):[WeeklyWorkouts]
 }
 
 type Mutation {

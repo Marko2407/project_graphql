@@ -23,6 +23,10 @@ const filterWorkoutByDay = (workout, day) => {
   return workout.filter((workout) => workout.day == day);
 };
 
+function subtractWeeks(numOfWeeks, date = new Date()) {
+  return date.setDate(date.getDate() - numOfWeeks * 7);
+}
+
 const mapWorkouts = (
   monday,
   tuesday,
@@ -187,6 +191,43 @@ const resolvers = {
         dateCreated: { $gte: firstday, $lte: lastday },
       }).sort({ dateCreated: +1 });
       return workouts;
+    },
+
+    getWorkoutForSelectedWeek: async (_parent, args, _context, _info) => {
+      var curr = new Date(subtractWeeks(args.weeklyOffset, curr))
+      console.log(curr)
+
+      var firstday = removeTime(
+        new Date(curr.setDate(curr.getDate() - curr.getDay() + 1))
+      );
+      var lastday = removeTime(
+        new Date(curr.setDate(curr.getDate() - curr.getDay() + 7))
+      );
+
+      console.log("date range: " + firstday + " - " + lastday)
+      const workout = await Workout.find({
+        dateCreated: { $gte: firstday, $lte: lastday },
+      });
+
+      const sunday = filterWorkoutByDay(workout, daysInWeek[0]);
+      const monday = filterWorkoutByDay(workout, daysInWeek[1]);
+      const tuesday = filterWorkoutByDay(workout, daysInWeek[2]);
+      const wednesday = filterWorkoutByDay(workout, daysInWeek[3]);
+      const thursday = filterWorkoutByDay(workout, daysInWeek[4]);
+      const friday = filterWorkoutByDay(workout, daysInWeek[5]);
+      const saturday = filterWorkoutByDay(workout, daysInWeek[6]);
+
+      const weeklyWorkout = mapWorkouts(
+        monday,
+        tuesday,
+        wednesday,
+        thursday,
+        friday,
+        saturday,
+        sunday
+      );
+
+      return weeklyWorkout;
     },
 
     getWorkoutBySearchInput: async (_parent, args, _context, _info) => {

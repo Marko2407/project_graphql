@@ -1,4 +1,4 @@
-# mb_project_graphql
+# Project documentation
 
 To start this project you need to have instaled: node.js, npm, graphql, mongoose and MongoDb 
 

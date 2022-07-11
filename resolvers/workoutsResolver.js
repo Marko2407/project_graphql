@@ -233,8 +233,8 @@ const resolvers = {
     getWorkoutBySearchInput: async (_parent, args, _context, _info) => {
       return await Workout.find({
         $or: [
-          { title: { $regex: args.title, $options: 'i' } },
-          { description: { $regex: args.title, $options: 'i' } },
+          { title: { $regex: args.searchInput, $options: 'i' } },
+          { description: { $regex: args.searchInput, $options: 'i' } },
         ],
       });
     },

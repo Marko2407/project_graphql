@@ -18,6 +18,7 @@ type WeeklyWorkouts{
 }
 
 type User{
+    id:ID
     firstName: String
     lastName: String
     weight: Int
@@ -43,6 +44,9 @@ type Mutation {
     deleteWorkout(id: ID): Boolean
     updateWorkout(id: ID, title: String, description: String, dateCreated: String): Workout
     createUser(firstName: String, lastName: String, weight: Int, height: Int): User
+    deleteUser(id: ID): Boolean
+    updateUser(id: ID, firstName: String, lastName: String, weight: Int, height: Int): User
+   
 }`;
 
 module.exports = typeDefs;

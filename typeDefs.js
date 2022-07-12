@@ -17,6 +17,13 @@ type WeeklyWorkouts{
     workouts: [Workout]
 }
 
+type User{
+    firstName: String
+    lastName: String
+    weight: Int
+    height: Int
+}
+
 type Query{
     getAllWorkouts:[Workout]
     getCurrentWeekWorkouts:[WeeklyWorkouts]
@@ -28,12 +35,14 @@ type Query{
     getAllWorkoutForCurrentWeek: [Workout]
     getWorkoutBySearchInput(searchInput: String): [Workout],
     getWorkoutForSelectedWeek(weeklyOffset: Int):[WeeklyWorkouts]
+    getUser: [User]
 }
 
 type Mutation {
     createWorkout(day: String, title: String, description: String, dateCreated: String, reps: Int, series: Int): Workout
     deleteWorkout(id: ID): Boolean
     updateWorkout(id: ID, title: String, description: String, dateCreated: String): Workout
+    createUser(firstName: String, lastName: String, weight: Int, height: Int): User
 }`;
 
 module.exports = typeDefs;

@@ -2,13 +2,14 @@ const express = require('express')
 const{ ApolloServer, gql } = require('apollo-server-express')
 const typeDefs = require('./typeDefs') 
 const resolvers = require('./resolvers/workoutsResolver')
+const userResolvers = require('./resolvers/userResolver')
 const mongoose = require('mongoose')
 
 async function startServer(){
     const app = express()
     const apolloServer = new ApolloServer({
         typeDefs: typeDefs,
-        resolvers: resolvers,
+        resolvers: [resolvers, userResolvers],
     });
 
     await apolloServer.start()

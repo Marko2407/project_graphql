@@ -36,7 +36,14 @@ const mapWorkouts = (
   saturday,
   sunday
 ) => {
-  return [
+  if(monday.length == 0 
+     && tuesday.length == 0 && wednesday.length == 0
+     && thursday.length == 0 && friday.length == 0
+     && saturday.length == 0 && sunday.length == 0) {
+    return []
+  }
+  else{
+    return [
     WeeklyWorkouts({
       day: daysInWeek[1],
       workouts: monday,
@@ -65,7 +72,7 @@ const mapWorkouts = (
       day: daysInWeek[0],
       workouts: sunday,
     }),
-  ];
+  ]; }
 };
 
 const resolvers = {

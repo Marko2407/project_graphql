@@ -3,6 +3,10 @@ const User = require('../models/User');
 const userResolvers = {
     Query: {
         getUser: async () => {
+            const user = await User.findOne();
+            return user;
+          },
+          getAllUsers: async () => {
             const user = await User.find();
             return user;
           },

@@ -1,5 +1,18 @@
 const Workout = require('../models/Workout');
 const WeeklyWorkouts = require('../models/WeeklyWorkouts');
+const { response } = require('express');
+
+function findAnswer(list, terms){
+  let answer = false
+list.forEach((e) =>{
+    if(e.getDate() == terms.getDate()){
+      answer = true
+    }else{
+      answer = false
+    }
+  })
+  return answer
+}
 
 const daysInWeek = [
   'Sunday',
@@ -86,12 +99,14 @@ const resolvers = {
       const today = removeTime(new Date());
 
       const firstDay = new Date(
-        today.setDate(today.getDate() - today.getDay() + 1)
+        today.setDate(today.getDate() - today.getUTCDay()+1)
       ); // Monday
       const lastDay = new Date(
-        today.setDate(today.getDate() - today.getDay() + 7)
+        today.setDate(today.getDate() - today.getUTCDay() + 7)
       ); // Sunday
 
+      console.log(firstDay)
+      console.log(lastDay)
       const workout = await Workout.find({
         dateCreated: { $gte: firstDay, $lte: lastDay },
       });
@@ -121,10 +136,10 @@ const resolvers = {
       if (!isValidDate(today)) return [];
       console.log(today);
       const firstDay = new Date(
-        today.setDate(today.getDate() - today.getDay() + 1)
+        today.setDate(today.getDate() - today.getUTCDay() + 1)
       ); // Monday
       const lastDay = new Date(
-        today.setDate(today.getDate() - today.getDay() + 7)
+        today.setDate(today.getDate() - today.getUTCDay() + 7)
       ); // Sunday
 
       const workout = await Workout.find({
@@ -185,17 +200,18 @@ const resolvers = {
       return workouts;
     },
     getAllWorkoutForCurrentWeek: async (_parent, _args, _context, _info) => {
-      var curr = new Date();
-      var firstday = removeTime(
-        new Date(curr.setDate(curr.getDate() - curr.getDay() + 1))
-      );
-      var lastday = removeTime(
-        new Date(curr.setDate(curr.getDate() - curr.getDay() + 7))
-      );
-      console.log(firstday);
-      console.log(lastday);
+      const today = removeTime(new Date());
+      const firstDay = new Date(
+        today.setDate(today.getDate() - today.getUTCDay()+1)
+      ); // Monday
+      const lastDay = new Date(
+        today.setDate(today.getDate() - today.getUTCDay() + 7)
+      ); // Sunday
+
+      console.log(firstDay);
+      console.log(lastDay);
       const workouts = await Workout.find({
-        dateCreated: { $gte: firstday, $lte: lastday },
+        dateCreated: { $gte: firstDay, $lte: lastDay },
       }).sort({ dateCreated: +1 });
       return workouts;
     },
@@ -205,10 +221,10 @@ const resolvers = {
       console.log(curr)
 
       var firstday = removeTime(
-        new Date(curr.setDate(curr.getDate() - curr.getDay() + 1))
+        new Date(curr.setDate(curr.getDate() - curr.getUTCDay() + 1))
       );
       var lastday = removeTime(
-        new Date(curr.setDate(curr.getDate() - curr.getDay() + 7))
+        new Date(curr.setDate(curr.getDate() - curr.getUTCDay() + 7))
       );
 
       console.log("date range: " + firstday + " - " + lastday)
@@ -238,12 +254,28 @@ const resolvers = {
     },
 
     getWorkoutBySearchInput: async (_parent, args, _context, _info) => {
-      return await Workout.find({
+      const searchResult =  await Workout.find({
         $or: [
           { title: { $regex: args.searchInput, $options: 'i' } },
           { description: { $regex: args.searchInput, $options: 'i' } },
         ],
       });
+
+      let searchResponseList = []
+      let dateCreationMap = []
+      
+      searchResult.forEach((response) =>{
+        if(!findAnswer(dateCreationMap,response.dateCreated)){
+              dateCreationMap.push(response.dateCreated)
+        }
+      }) 
+      
+      dateCreationMap.forEach((date)=> {
+        searchResponseList.push({day: daysInWeek[date.getDay()],date: date ,workout : searchResult.filter((workout) => {
+         return new Date(Date.parse(workout.dateCreated)).toDateString() == date.toDateString()
+         })})
+      })
+      return searchResponseList
     },
   },
 

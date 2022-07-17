@@ -25,6 +25,12 @@ type User{
     height: Int
 }
 
+type SearchResponse{
+    day: String,
+    date: String,
+    workout: [Workout]
+}
+
 type Query{
     getAllWorkouts:[Workout]
     getCurrentWeekWorkouts:[WeeklyWorkouts]
@@ -34,7 +40,7 @@ type Query{
     getTodayWorkouts: [Workout]
     getWorkoutByDateRange(before: String, after: String): [Workout]
     getAllWorkoutForCurrentWeek: [Workout]
-    getWorkoutBySearchInput(searchInput: String): [Workout],
+    getWorkoutBySearchInput(searchInput: String): [SearchResponse],
     getWorkoutForSelectedWeek(weeklyOffset: Int):[WeeklyWorkouts]
     getUser: User
     getAllUsers: [User]

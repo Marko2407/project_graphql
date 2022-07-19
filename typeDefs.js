@@ -41,7 +41,7 @@ type Query{
     getWorkoutByDateRange(before: String, after: String): [Workout]
     getAllWorkoutForCurrentWeek: [Workout]
     getWorkoutBySearchInput(searchInput: String): [SearchResponse],
-    getWorkoutForSelectedWeek(weeklyOffset: Int):[WeeklyWorkouts]
+    getWorkoutForSelectedWeek(date: String):[WeeklyWorkouts]
     getUser: User
     getAllUsers: [User]
 }

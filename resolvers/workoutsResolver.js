@@ -40,6 +40,10 @@ function subtractWeeks(numOfWeeks, date = new Date()) {
   return date.setDate(date.getDate() - numOfWeeks * 7);
 }
 
+function multiplyWeeks(numOfWeeks, date) {
+  return date.setDate(date.getDate() + numOfWeeks * 7);
+}
+
 const mapWorkouts = (
   monday,
   tuesday,
@@ -222,9 +226,9 @@ const resolvers = {
     },
 
     getWorkoutForSelectedWeek: async (_parent, args, _context, _info) => {
-      var curr = new Date(subtractWeeks(args.weeklyOffset, curr));
+      var curr = removeTime(new Date(parseInt(args.date)));
       console.log(curr);
-
+      if(!isValidDate(curr)) return []
       var firstday = removeTime(
         new Date(curr.setDate(curr.getDate() - curr.getUTCDay()))
       );

@@ -41,8 +41,7 @@ type Activity{
 
 type WeeklyActivities{
     day: String
-    date: String
-    activities: Activity 
+    activities: [Activity]
 }
 
 type MonthlyActivities{
@@ -68,7 +67,7 @@ type Query{
 
     getTodayActivity: Activity
     getAllActivities: [Activity]
-    getWeeklyActivities: [WeeklyActivities]
+    getWeeklyActivities: [Activity]
     getMonthlyActivities: [MonthlyActivities]
 }
 

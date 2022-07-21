@@ -4,10 +4,7 @@ const weeklyActivitySchema = new mongoose.Schema({
     day:{
         type: String
     },
-    dateCreated:{
-        type: Date
-    },
-    activites:{
+    activities:{
         type: Array
     }
 })

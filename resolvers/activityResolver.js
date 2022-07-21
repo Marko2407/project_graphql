@@ -1,6 +1,10 @@
 const Activity = require('../models/Activity');
-const WeeklyActivity = require('../models/WeeklyActivities');
+const WeeklyActivities = require('../models/WeeklyActivities');
 const MonthlyActivity = require('../models/MonthlyActivities');
+
+const filterActivitiesByDay = (activity, day) => {
+  return activity.filter((activity) => activity.day == day);
+};
 
 function getTotalSteps(steps){
   let totalSteps = 0
@@ -20,6 +24,47 @@ const daysInWeek = [
   'Saturday',
 ];
 
+function mapDailyActivity(activity, day){
+  if(activity == null) return {day:day}
+  return {
+    day: day,
+    dateCreated: activity.dateCreated,
+    steps: activity.steps,
+    totalSteps: activity.totalSteps
+  }
+}
+
+function mapWeeklyActivities(
+  monday,
+  tuesday,
+  wednesday,
+  thursday,
+  friday,
+  saturday,
+  sunday
+){
+  return [
+    Activity(
+      mapDailyActivity(monday,daysInWeek[1])),
+    Activity(
+      mapDailyActivity(tuesday,daysInWeek[2])),
+    Activity(
+      mapDailyActivity(wednesday,daysInWeek[3])),
+    Activity(
+      mapDailyActivity(thursday,daysInWeek[4])), 
+    Activity(
+      mapDailyActivity(friday,daysInWeek[5])), 
+    Activity(
+      mapDailyActivity(saturday,daysInWeek[6])), 
+    Activity(
+      mapDailyActivity(sunday,daysInWeek[0]))
+    ]
+};
+
+function mapMonthlyActivities(){
+  
+}
+
 const removeTime = (date) => {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate());
 };
@@ -33,6 +78,43 @@ const activityResolvers = {
       },
       getAllActivities: async()=>{
         return await Activity.find()
+    },
+    getWeeklyActivities: async() =>{
+      const today = removeTime(new Date());
+      const firstDay = new Date(
+        today.setDate(today.getDate() - today.getUTCDay() + 1)
+      ); // Monday
+      const lastDay = new Date(
+        today.setDate(today.getDate() - today.getUTCDay() + 7)
+      ); // Sunday
+
+      console.log(firstDay);
+      console.log(lastDay);
+      const activities = await Activity.find({
+        dateCreated: { $gte: firstDay, $lte: lastDay },
+      });
+
+   
+      const sunday = filterActivitiesByDay(activities, daysInWeek[0]);
+      const monday = filterActivitiesByDay(activities, daysInWeek[1]);
+      const tuesday = filterActivitiesByDay(activities, daysInWeek[2]);
+      const wednesday = filterActivitiesByDay(activities, daysInWeek[3]);
+      const thursday = filterActivitiesByDay(activities, daysInWeek[4]);
+      const friday = filterActivitiesByDay(activities, daysInWeek[5]);
+      const saturday = filterActivitiesByDay(activities, daysInWeek[6]);
+
+      console.log(thursday[0])
+      const weeklyActivities = mapWeeklyActivities(
+        monday[0],
+        tuesday[0],
+        wednesday[0],
+        thursday[0],
+        friday[0],
+        saturday[0],
+        sunday[0]
+      );
+
+      return weeklyActivities;
     }
     },
 

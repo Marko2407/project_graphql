@@ -8,13 +8,16 @@
     "dev": "nodemon server.js",
     "start": "node server.js"
   },
-  "keywords": [],
+  "keywords": [
+    "heroku"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "apollo-server-express": "^3.8.1",
     "express": "^4.18.1",
     "graphql": "^16.5.0",
+    "heroku": "^7.60.2",
     "mongoose": "^6.3.5"
   },
   "devDependencies": {

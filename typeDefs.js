@@ -39,6 +39,11 @@ type Activity{
     totalSteps: Int
 }
 
+type ActivityWithTotalSteps{
+    activities:[Activity]
+    totalSteps: Int
+}
+
 type WeeklyActivities{
     day: String
     activities: [Activity]
@@ -67,7 +72,7 @@ type Query{
 
     getTodayActivity: Activity
     getAllActivities: [Activity]
-    getWeeklyActivities: [Activity]
+    getWeeklyActivities: ActivityWithTotalSteps
     getMonthlyActivities: [MonthlyActivities]
 }
 

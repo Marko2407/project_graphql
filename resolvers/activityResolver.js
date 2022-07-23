@@ -6,6 +6,14 @@ const filterActivitiesByDay = (activity, day) => {
   return activity.filter((activity) => activity.day == day);
 };
 
+function calculateTotalSteps(activities){
+  let totalSteps = 0
+  activities.forEach((element) =>{
+    totalSteps += element.totalSteps
+  })
+  return totalSteps
+}
+
 function getTotalSteps(steps){
   let totalSteps = 0
   steps.forEach(element => {
@@ -61,8 +69,10 @@ function mapWeeklyActivities(
     ]
 };
 
+
+//kako range vraca ako datum prelazi mjesec npr 1.8 je u subotu ...
 function mapMonthlyActivities(){
-  
+
 }
 
 const removeTime = (date) => {
@@ -102,9 +112,10 @@ const activityResolvers = {
       const thursday = filterActivitiesByDay(activities, daysInWeek[4]);
       const friday = filterActivitiesByDay(activities, daysInWeek[5]);
       const saturday = filterActivitiesByDay(activities, daysInWeek[6]);
-
-      console.log(thursday[0])
-      const weeklyActivities = mapWeeklyActivities(
+      
+      const steps = calculateTotalSteps(activities)
+     
+      const dailyActivities = mapWeeklyActivities(
         monday[0],
         tuesday[0],
         wednesday[0],
@@ -114,7 +125,10 @@ const activityResolvers = {
         sunday[0]
       );
 
-      return weeklyActivities;
+      return {
+        activities: dailyActivities,
+        totalSteps: steps
+       }
     }
     },
 

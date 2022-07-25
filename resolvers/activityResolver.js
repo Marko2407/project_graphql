@@ -213,7 +213,7 @@ const activityResolvers = {
         totalSteps: steps,
       };
     },
-    getMonthyDateRange: async (_parent, args, _context, _info) => {
+    getMonthlyActivities: async (_parent, args, _context, _info) => {
       //Treba se iz argsa poslat mjesec za koji se radi datum
       const today = new Date(args.date);
       const listRangeDate = getListOfDateRange(today);

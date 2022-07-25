@@ -76,9 +76,7 @@ const typeDefs = gql`
     getTodayActivity: Activity
     getAllActivities: [Activity]
     getWeeklyActivities: ActivityWithTotalSteps
-    getMonthlyActivities: [MonthlyActivities]
-
-    getMonthyDateRange(date: String): [MonthlyActivities]
+    getMonthlyActivities(date: String): [MonthlyActivities]
   }
 
   type Mutation {

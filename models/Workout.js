@@ -1,26 +1,26 @@
 const mongoose = require('mongoose')
 
 const WorkoutSchema = new mongoose.Schema({
-    day:{
+    day: {
         type: String
     },
-    title:{
+    title: {
         type: String,
         required: true
     },
-    description:{
+    description: {
         type: String
     },
-    dateCreated:{
+    dateCreated: {
         type: Date,
         default: new Date(Date.now)
     },
-    reps:{
+    reps: {
         type: Number,
         required: true,
         default: 1
     },
-    series:{
+    series: {
         type: Number,
         required: true,
         default: 1

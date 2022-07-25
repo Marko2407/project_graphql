@@ -1,13 +1,13 @@
 const mongoose = require('mongoose')
 
 const WeeklyWorkoutSchema = new mongoose.Schema({
-    day:{
+    day: {
         type: String
     },
-    workouts:{
-         type: Array
+    workouts: {
+        type: Array
     }
-   
+
 })
 
 const WeeklyWorkout = mongoose.model('weeklyWorkout', WeeklyWorkoutSchema)

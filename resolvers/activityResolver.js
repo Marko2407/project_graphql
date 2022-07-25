@@ -168,7 +168,9 @@ const todayDate = removeTime(new Date());
 const activityResolvers = {
   Query: {
     getTodayActivity: async () => {
-      return await Activity.findOne({ dateCreated: todayDate });
+      const response = await Activity.findOne({ dateCreated: todayDate });
+      console.log(response);
+      return response;
     },
     getAllActivities: async () => {
       return await Activity.find();
@@ -176,10 +178,10 @@ const activityResolvers = {
     getWeeklyActivities: async () => {
       const today = removeTime(new Date());
       const firstDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 1)
+        today.setDate(today.getDate() - today.getDay() + 1)
       ); // Monday
       const lastDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 7)
+        today.setDate(today.getDate() - today.getDay() + 7)
       ); // Sunday
 
       console.log(firstDay);
@@ -187,7 +189,7 @@ const activityResolvers = {
       const activities = await Activity.find({
         dateCreated: { $gte: firstDay, $lte: lastDay },
       });
-
+      console.log(activities);
       const sunday = filterActivitiesByDay(activities, daysInWeek[0]);
       const monday = filterActivitiesByDay(activities, daysInWeek[1]);
       const tuesday = filterActivitiesByDay(activities, daysInWeek[2]);

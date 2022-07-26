@@ -1,73 +1,7 @@
 const Activity = require("../models/Activity");
-const WeeklyActivities = require("../models/WeeklyActivities");
-const MonthlyActivity = require("../models/MonthlyActivities");
-const { response } = require("express");
-const { parseJSON } = require("date-fns");
-
-//Generira tjedan u trenutnoj godini
-Date.prototype.getWeek = function () {
-  let date = new Date(this.getTime());
-  date.setHours(0, 0, 0, 0);
-  date.setDate(date.getDate() - ((date.getDay() + 6) % 7));
-  var week1 = new Date(date.getFullYear(), 0, 4);
-  return (
-    1 +
-    Math.round(
-      ((date.getTime() - week1.getTime()) / 86400000 -
-        3 +
-        ((week1.getDay() + 6) % 7)) /
-        7
-    )
-  );
-};
-
-//Generira range na temelju broja tjedna
-function getDateRangeOfWeek(weekNo) {
-  let currentDate, numOfdaysPastSinceLastMonday, rangeIsFrom, rangeIsTo;
-  currentDate = new Date();
-  numOfdaysPastSinceLastMonday = currentDate.getDay() - 1;
-  currentDate.setDate(currentDate.getDate() - numOfdaysPastSinceLastMonday);
-  currentDate.setDate(
-    currentDate.getDate() + 7 * (weekNo - currentDate.getWeek())
-  );
-  rangeIsFrom =
-    currentDate.getMonth() +
-    1 +
-    "." +
-    currentDate.getDate() +
-    "." +
-    currentDate.getFullYear();
-  currentDate.setDate(currentDate.getDate() + 6);
-  rangeIsTo =
-    currentDate.getMonth() +
-    1 +
-    "." +
-    currentDate.getDate() +
-    "." +
-    currentDate.getFullYear();
-  return {
-    from: rangeIsFrom,
-    to: rangeIsTo,
-  };
-}
-
-function getListOfDateRange(date) {
-  const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 2);
-  const lastDayOfMonth = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-  const firstWeekInMonth = firstDayOfMonth.getWeek();
-  const lastWeekInMonth = lastDayOfMonth.getWeek();
-
-  let listOfDateRange = [];
-  for (let i = firstWeekInMonth; i < lastWeekInMonth; i++) {
-    let dateRangeFinder = getDateRangeOfWeek(i);
-    listOfDateRange.push({
-      firstDay: dateRangeFinder.from,
-      lastDay: dateRangeFinder.to,
-    });
-  }
-
-  return listOfDateRange;
-}
+const dateUtils = require("../dateUtils.js");
+const t = dateUtils;
+console.log(t);
 
 const filterActivitiesByDay = (activity, day) => {
   return activity.filter((activity) => activity.day == day);
@@ -88,16 +22,6 @@ function getTotalSteps(steps) {
   });
   return totalSteps;
 }
-
-const daysInWeek = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-];
 
 function mapDailyActivity(activity, day) {
   if (activity == null) return { day: day };
@@ -120,25 +44,25 @@ function mapWeeklyActivities(
   sunday
 ) {
   return [
-    Activity(mapDailyActivity(monday, daysInWeek[1])),
-    Activity(mapDailyActivity(tuesday, daysInWeek[2])),
-    Activity(mapDailyActivity(wednesday, daysInWeek[3])),
-    Activity(mapDailyActivity(thursday, daysInWeek[4])),
-    Activity(mapDailyActivity(friday, daysInWeek[5])),
-    Activity(mapDailyActivity(saturday, daysInWeek[6])),
-    Activity(mapDailyActivity(sunday, daysInWeek[0])),
+    Activity(mapDailyActivity(monday, dateUtils.daysInWeek[1])),
+    Activity(mapDailyActivity(tuesday, dateUtils.daysInWeek[2])),
+    Activity(mapDailyActivity(wednesday, dateUtils.daysInWeek[3])),
+    Activity(mapDailyActivity(thursday, dateUtils.daysInWeek[4])),
+    Activity(mapDailyActivity(friday, dateUtils.daysInWeek[5])),
+    Activity(mapDailyActivity(saturday, dateUtils.daysInWeek[6])),
+    Activity(mapDailyActivity(sunday, dateUtils.daysInWeek[0])),
   ];
 }
 
 function mapMonthlyActivities(activities, iterator) {
   const weekNumber = "week " + iterator;
-  const sunday = filterActivitiesByDay(activities, daysInWeek[0]);
-  const monday = filterActivitiesByDay(activities, daysInWeek[1]);
-  const tuesday = filterActivitiesByDay(activities, daysInWeek[2]);
-  const wednesday = filterActivitiesByDay(activities, daysInWeek[3]);
-  const thursday = filterActivitiesByDay(activities, daysInWeek[4]);
-  const friday = filterActivitiesByDay(activities, daysInWeek[5]);
-  const saturday = filterActivitiesByDay(activities, daysInWeek[6]);
+  const sunday = filterActivitiesByDay(activities, dateUtils.daysInWeek[0]);
+  const monday = filterActivitiesByDay(activities, dateUtils.daysInWeek[1]);
+  const tuesday = filterActivitiesByDay(activities, dateUtils.daysInWeek[2]);
+  const wednesday = filterActivitiesByDay(activities, dateUtils.daysInWeek[3]);
+  const thursday = filterActivitiesByDay(activities, dateUtils.daysInWeek[4]);
+  const friday = filterActivitiesByDay(activities, dateUtils.daysInWeek[5]);
+  const saturday = filterActivitiesByDay(activities, dateUtils.daysInWeek[6]);
 
   const steps = calculateTotalSteps(activities);
 
@@ -159,11 +83,7 @@ function mapMonthlyActivities(activities, iterator) {
   };
 }
 
-const removeTime = (date) => {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-};
-
-const todayDate = removeTime(new Date());
+const todayDate = dateUtils.removeTime(new Date());
 
 const activityResolvers = {
   Query: {
@@ -176,7 +96,7 @@ const activityResolvers = {
       return await Activity.find();
     },
     getWeeklyActivities: async () => {
-      const today = removeTime(new Date());
+      const today = dateUtils.removeTime(new Date());
       const firstDay = new Date(
         today.setDate(today.getDate() - today.getDay() + 1)
       ); // Monday
@@ -190,13 +110,25 @@ const activityResolvers = {
         dateCreated: { $gte: firstDay, $lte: lastDay },
       });
       console.log(activities);
-      const sunday = filterActivitiesByDay(activities, daysInWeek[0]);
-      const monday = filterActivitiesByDay(activities, daysInWeek[1]);
-      const tuesday = filterActivitiesByDay(activities, daysInWeek[2]);
-      const wednesday = filterActivitiesByDay(activities, daysInWeek[3]);
-      const thursday = filterActivitiesByDay(activities, daysInWeek[4]);
-      const friday = filterActivitiesByDay(activities, daysInWeek[5]);
-      const saturday = filterActivitiesByDay(activities, daysInWeek[6]);
+      const sunday = filterActivitiesByDay(activities, dateUtils.daysInWeek[0]);
+      const monday = filterActivitiesByDay(activities, dateUtils.daysInWeek[1]);
+      const tuesday = filterActivitiesByDay(
+        activities,
+        dateUtils.daysInWeek[2]
+      );
+      const wednesday = filterActivitiesByDay(
+        activities,
+        dateUtils.daysInWeek[3]
+      );
+      const thursday = filterActivitiesByDay(
+        activities,
+        dateUtils.daysInWeek[4]
+      );
+      const friday = filterActivitiesByDay(activities, dateUtils.daysInWeek[5]);
+      const saturday = filterActivitiesByDay(
+        activities,
+        dateUtils.daysInWeek[6]
+      );
 
       const steps = calculateTotalSteps(activities);
 
@@ -218,7 +150,7 @@ const activityResolvers = {
     getMonthlyActivities: async (_parent, args, _context, _info) => {
       //Treba se iz argsa poslat mjesec za koji se radi datum
       const today = new Date(args.date);
-      const listRangeDate = getListOfDateRange(today);
+      const listRangeDate = dateUtils.getListOfDateRange(today);
       let activities = [];
 
       for (let i = 0; i < listRangeDate.length; i++) {
@@ -246,7 +178,7 @@ const activityResolvers = {
       if (steps == null) return null;
 
       return await new Activity({
-        day: daysInWeek[todayDate.getDay()],
+        day: dateUtils.daysInWeek[todayDate.getDay()],
         steps: [steps],
         totalSteps: steps,
         dateCreated: todayDate,

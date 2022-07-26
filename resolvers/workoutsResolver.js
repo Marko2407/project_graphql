@@ -1,6 +1,7 @@
-const Workout = require('../models/Workout');
-const WeeklyWorkouts = require('../models/WeeklyWorkouts');
-const { response } = require('express');
+const Workout = require("../models/Workout");
+const WeeklyWorkouts = require("../models/WeeklyWorkouts");
+const { response } = require("express");
+const dateUtils = require("../dateUtils.js");
 
 function findAnswer(list, terms) {
   let answer = false;
@@ -14,35 +15,9 @@ function findAnswer(list, terms) {
   return answer;
 }
 
-const daysInWeek = [
-  'Sunday',
-  'Monday',
-  'Tuesday',
-  'Wednesday',
-  'Thursday',
-  'Friday',
-  'Saturday',
-];
-
-const isValidDate = (d) => {
-  return d instanceof Date && !isNaN(d);
-};
-
-const removeTime = (date) => {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-};
-
 const filterWorkoutByDay = (workout, day) => {
   return workout.filter((workout) => workout.day == day);
 };
-
-function subtractWeeks(numOfWeeks, date = new Date()) {
-  return date.setDate(date.getDate() - numOfWeeks * 7);
-}
-
-function multiplyWeeks(numOfWeeks, date) {
-  return date.setDate(date.getDate() + numOfWeeks * 7);
-}
 
 const mapWorkouts = (
   monday,
@@ -66,31 +41,31 @@ const mapWorkouts = (
   } else {
     return [
       WeeklyWorkouts({
-        day: daysInWeek[1],
+        day: dateUtils.daysInWeek[1],
         workouts: monday,
       }),
       WeeklyWorkouts({
-        day: daysInWeek[2],
+        day: dateUtils.daysInWeek[2],
         workouts: tuesday,
       }),
       WeeklyWorkouts({
-        day: daysInWeek[3],
+        day: dateUtils.daysInWeek[3],
         workouts: wednesday,
       }),
       WeeklyWorkouts({
-        day: daysInWeek[4],
+        day: dateUtils.daysInWeek[4],
         workouts: thursday,
       }),
       WeeklyWorkouts({
-        day: daysInWeek[5],
+        day: dateUtils.daysInWeek[5],
         workouts: friday,
       }),
       WeeklyWorkouts({
-        day: daysInWeek[6],
+        day: dateUtils.daysInWeek[6],
         workouts: saturday,
       }),
       WeeklyWorkouts({
-        day: daysInWeek[0],
+        day: dateUtils.daysInWeek[0],
         workouts: sunday,
       }),
     ];
@@ -105,7 +80,7 @@ const resolvers = {
     },
 
     getCurrentWeekWorkouts: async () => {
-      const today = removeTime(new Date());
+      const today = dateUtils.removeTime(new Date());
 
       const firstDay = new Date(
         today.setDate(today.getDate() - today.getUTCDay() + 1)
@@ -119,13 +94,13 @@ const resolvers = {
       const workout = await Workout.find({
         dateCreated: { $gte: firstDay, $lte: lastDay },
       });
-      const sunday = filterWorkoutByDay(workout, daysInWeek[0]);
-      const monday = filterWorkoutByDay(workout, daysInWeek[1]);
-      const tuesday = filterWorkoutByDay(workout, daysInWeek[2]);
-      const wednesday = filterWorkoutByDay(workout, daysInWeek[3]);
-      const thursday = filterWorkoutByDay(workout, daysInWeek[4]);
-      const friday = filterWorkoutByDay(workout, daysInWeek[5]);
-      const saturday = filterWorkoutByDay(workout, daysInWeek[6]);
+      const sunday = filterWorkoutByDay(workout, dateUtils.daysInWeek[0]);
+      const monday = filterWorkoutByDay(workout, dateUtils.daysInWeek[1]);
+      const tuesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[2]);
+      const wednesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[3]);
+      const thursday = filterWorkoutByDay(workout, dateUtils.daysInWeek[4]);
+      const friday = filterWorkoutByDay(workout, dateUtils.daysInWeek[5]);
+      const saturday = filterWorkoutByDay(workout, dateUtils.daysInWeek[6]);
 
       const weeklyWorkout = mapWorkouts(
         monday,
@@ -141,8 +116,8 @@ const resolvers = {
     },
 
     getWeeklykWorkoutsByDate: async (_parent, args, _context, _info) => {
-      const today = removeTime(new Date(args.date));
-      if (!isValidDate(today)) return [];
+      const today = dateUtils.removeTime(new Date(args.date));
+      if (!dateUtils.isValidDate(today)) return [];
       console.log(today);
       const firstDay = new Date(
         today.setDate(today.getDate() - today.getUTCDay() + 1)
@@ -155,13 +130,13 @@ const resolvers = {
         dateCreated: { $gte: firstDay, $lte: lastDay },
       });
 
-      const sunday = filterWorkoutByDay(workout, daysInWeek[0]);
-      const monday = filterWorkoutByDay(workout, daysInWeek[1]);
-      const tuesday = filterWorkoutByDay(workout, daysInWeek[2]);
-      const wednesday = filterWorkoutByDay(workout, daysInWeek[3]);
-      const thursday = filterWorkoutByDay(workout, daysInWeek[4]);
-      const friday = filterWorkoutByDay(workout, daysInWeek[5]);
-      const saturday = filterWorkoutByDay(workout, daysInWeek[6]);
+      const sunday = filterWorkoutByDay(workout, dateUtils.daysInWeek[0]);
+      const monday = filterWorkoutByDay(workout, dateUtils.daysInWeek[1]);
+      const tuesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[2]);
+      const wednesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[3]);
+      const thursday = filterWorkoutByDay(workout, dateUtils.daysInWeek[4]);
+      const friday = filterWorkoutByDay(workout, dateUtils.daysInWeek[5]);
+      const saturday = filterWorkoutByDay(workout, dateUtils.daysInWeek[6]);
 
       const weeklyWorkout = mapWorkouts(
         monday,
@@ -181,26 +156,26 @@ const resolvers = {
     },
 
     getWorkoutByDate: async (_parent, args, _context, _info) => {
-      const date = removeTime(new Date(args.date));
-      if (!isValidDate(date)) return [];
+      const date = dateUtils.removeTime(new Date(args.date));
+      if (!dateUtils.isValidDate(date)) return [];
       const workouts = await Workout.find({ dateCreated: date });
       return workouts;
     },
 
     getTodayWorkouts: async (_parent, args, _context, _info) => {
-      const date = removeTime(new Date());
-      if (!isValidDate(date)) return [];
+      const date = dateUtils.removeTime(new Date());
+      if (!dateUtils.isValidDate(date)) return [];
       const workouts = await Workout.find({ dateCreated: date });
       return workouts;
     },
     getWorkoutByDateRange: async (_parent, args, _context, _info) => {
-      let beforeDate = removeTime(new Date(args.before));
-      let afterDate = removeTime(new Date(args.after));
-      if (!isValidDate(beforeDate)) {
-        beforeDate = removeTime(new Date(Date.now()));
+      let beforeDate = dateUtils.removeTime(new Date(args.before));
+      let afterDate = dateUtils.removeTime(new Date(args.after));
+      if (!dateUtils.isValidDate(beforeDate)) {
+        beforeDate = dateUtils.removeTime(new Date(Date.now()));
       }
-      if (!isValidDate(afterDate)) {
-        afterDate = removeTime(new Date(Date.now()));
+      if (!dateUtils.isValidDate(afterDate)) {
+        afterDate = dateUtils.removeTime(new Date(Date.now()));
       }
 
       const workouts = await Workout.find({
@@ -209,7 +184,7 @@ const resolvers = {
       return workouts;
     },
     getAllWorkoutForCurrentWeek: async (_parent, _args, _context, _info) => {
-      const today = removeTime(new Date());
+      const today = dateUtils.removeTime(new Date());
       const firstDay = new Date(
         today.setDate(today.getDate() - today.getUTCDay() + 1)
       ); // Monday
@@ -226,28 +201,28 @@ const resolvers = {
     },
 
     getWorkoutForSelectedWeek: async (_parent, args, _context, _info) => {
-      var curr = removeTime(new Date(parseInt(args.date)));
+      var curr = dateUtils.removeTime(new Date(parseInt(args.date)));
       console.log(curr);
-      if(!isValidDate(curr)) return []
-      var firstday = removeTime(
+      if (!dateUtils.isValidDate(curr)) return [];
+      var firstday = dateUtils.removeTime(
         new Date(curr.setDate(curr.getDate() - curr.getUTCDay()))
       );
-      var lastday = removeTime(
+      var lastday = dateUtils.removeTime(
         new Date(curr.setDate(curr.getDate() - curr.getUTCDay() + 6))
       );
 
-      console.log('date range: ' + firstday + ' - ' + lastday);
+      console.log("date range: " + firstday + " - " + lastday);
       const workout = await Workout.find({
         dateCreated: { $gte: firstday, $lte: lastday },
       });
 
-      const sunday = filterWorkoutByDay(workout, daysInWeek[0]);
-      const monday = filterWorkoutByDay(workout, daysInWeek[1]);
-      const tuesday = filterWorkoutByDay(workout, daysInWeek[2]);
-      const wednesday = filterWorkoutByDay(workout, daysInWeek[3]);
-      const thursday = filterWorkoutByDay(workout, daysInWeek[4]);
-      const friday = filterWorkoutByDay(workout, daysInWeek[5]);
-      const saturday = filterWorkoutByDay(workout, daysInWeek[6]);
+      const sunday = filterWorkoutByDay(workout, dateUtils.daysInWeek[0]);
+      const monday = filterWorkoutByDay(workout, dateUtils.daysInWeek[1]);
+      const tuesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[2]);
+      const wednesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[3]);
+      const thursday = filterWorkoutByDay(workout, dateUtils.daysInWeek[4]);
+      const friday = filterWorkoutByDay(workout, dateUtils.daysInWeek[5]);
+      const saturday = filterWorkoutByDay(workout, dateUtils.daysInWeek[6]);
 
       const weeklyWorkout = mapWorkouts(
         monday,
@@ -265,8 +240,8 @@ const resolvers = {
     getWorkoutBySearchInput: async (_parent, args, _context, _info) => {
       const searchResult = await Workout.find({
         $or: [
-          { title: { $regex: args.searchInput, $options: 'i' } },
-          { description: { $regex: args.searchInput, $options: 'i' } },
+          { title: { $regex: args.searchInput, $options: "i" } },
+          { description: { $regex: args.searchInput, $options: "i" } },
         ],
       });
 
@@ -281,7 +256,7 @@ const resolvers = {
 
       dateCreationMap.forEach((date) => {
         searchResponseList.push({
-          day: daysInWeek[date.getDay()],
+          day: dateUtils.daysInWeek[date.getDay()],
           date: date,
           workout: searchResult.filter((workout) => {
             return (
@@ -301,14 +276,14 @@ const resolvers = {
 
       if (args.dateCreated != null) {
         date = new Date(args.dateCreated);
-        if (!isValidDate(date)) {
+        if (!dateUtils.isValidDate(date)) {
           date = new Date(Date.now());
         }
       }
 
-      const dayt = daysInWeek[date.getDay()];
+      const dayt = dateUtils.daysInWeek[date.getDay()];
 
-      date = removeTime(date);
+      date = dateUtils.removeTime(date);
 
       const { day, title, description, dateCreated, reps, series } = args;
       const workout = new Workout({
@@ -342,8 +317,8 @@ const resolvers = {
         updates.description = description;
       }
       if (dateCreated !== undefined) {
-        updates.dateCreated = removeTime(new Date(dateCreated));
-        updates.day = daysInWeek[updates.dateCreated.getDay()];
+        updates.dateCreated = dateUtils.removeTime(new Date(dateCreated));
+        updates.day = dateUtils.daysInWeek[updates.dateCreated.getDay()];
       }
 
       const workout = await Workout.findByIdAndUpdate(id, updates, {

@@ -1,5 +1,5 @@
-const Activity = require("../models/Activity");
-const dateUtils = require("../dateUtils.js");
+const Activity = require('../models/Activity');
+const dateUtils = require('../dateUtils.js');
 const t = dateUtils;
 console.log(t);
 
@@ -55,7 +55,7 @@ function mapWeeklyActivities(
 }
 
 function mapMonthlyActivities(activities, iterator) {
-  const weekNumber = "week " + iterator;
+  const weekNumber = 'week ' + iterator;
   const sunday = filterActivitiesByDay(activities, dateUtils.daysInWeek[0]);
   const monday = filterActivitiesByDay(activities, dateUtils.daysInWeek[1]);
   const tuesday = filterActivitiesByDay(activities, dateUtils.daysInWeek[2]);
@@ -149,7 +149,9 @@ const activityResolvers = {
     },
     getMonthlyActivities: async (_parent, args, _context, _info) => {
       //Treba se iz argsa poslat mjesec za koji se radi datum
-      const today = new Date(args.date);
+
+      const today = new Date(parseInt(args.date));
+      console.log(today);
       const listRangeDate = dateUtils.getListOfDateRange(today);
       let activities = [];
 

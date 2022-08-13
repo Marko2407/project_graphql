@@ -2,6 +2,8 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
+MONGODB_URI = mongodb+srv://user:user@mbdemo.krcxe.mongodb.net/?retryWrites=true&w=majority
+
 const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");
 const typeDefs = require("./typeDefs");
@@ -25,7 +27,7 @@ async function startServer() {
     res.send("Hello from express appolo server");
   });
 
-  await mongoose.connect(process.env.MONGODB_URI, {
+  await mongoose.connect(MONGODB_URI, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
   });

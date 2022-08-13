@@ -34,7 +34,7 @@ async function startServer() {
 
   let port = process.env.PORT || 4000;
 
-  app.listen(port, () => console.log("Sever is running " + port));
+  app.listen(port, () => console.log("Server is running " + port));
 }
 
 startServer();

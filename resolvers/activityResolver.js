@@ -148,11 +148,10 @@ const activityResolvers = {
       };
     },
     getMonthlyActivities: async (_parent, args, _context, _info) => {
-      const today = new Date(parseInt(args.date));
-      console.log(today);
-      const listRangeDate = dateUtils.getListOfDateRange(today);
+      const date = new Date(parseInt(args.date));
+      console.log(date);
+      const listRangeDate = dateUtils.getListOfDateRange(date);
       let activities = [];
-
       for (let i = 0; i < listRangeDate.length; i++) {
         const response = await Activity.find({
           dateCreated: {
@@ -165,10 +164,7 @@ const activityResolvers = {
         activities.push(mapMonthlyActivities(response, i + 1));
         console.log(activities);
       }
-
-      //kreira listu datuma range za mjesec!
       return activities;
-      // treba kreirati da iz liste pronade sve activitie i spremi za tjedan neki koristit for petlju kako bi se mogao tjedan napraviti
     },
   },
 

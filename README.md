@@ -6,7 +6,7 @@ To install node.js:
       on Mac -> brew install node   
       on Windows -> download .tar.gz file  https://nodejs.org/en/download/ , install node.js
 
-npm i express apollo-server-express graphql mongoose   
+npm i express apollo-server-express graphql mongoose heroku
 
 npm i --save-dev-nodemon
 
@@ -14,7 +14,10 @@ npm i mongoose
 
 npm i body-parser
 
-npm i --save-dev dotenv                                 
+npm i --save-dev dotenv 
+
+run this in terminal: 
+ npm i express apollo-server-express graphql mongoose heroku --save-dev-nodemon mongoose body-parser --save-dev dotenv 
 
 To start mongodb/brew/mongodb-community now and restart at login:
   brew services start mongodb/brew/mongodb-community

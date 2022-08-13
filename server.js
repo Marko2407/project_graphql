@@ -2,7 +2,8 @@ if (process.env.NODE_ENV !== "production") {
   require("dotenv").config();
 }
 
-MONGODB_URI = mongodb+srv://user:user@mbdemo.krcxe.mongodb.net/?retryWrites=true&w=majority
+MONGODB_URI =
+  "mongodb+srv://user:user@mbdemo.krcxe.mongodb.net/?retryWrites=true&w=majority";
 
 const express = require("express");
 const { ApolloServer, gql } = require("apollo-server-express");

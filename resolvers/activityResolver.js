@@ -98,6 +98,7 @@ const activityResolvers = {
       const today = dateUtils.removeTime(new Date());
       const dates = dateUtils.getDateRangeOfWeek(today.getWeek());
 
+      console.log(today.getWeek());
       console.log(dates.from);
       console.log(dates.to);
       const activities = await Activity.find({

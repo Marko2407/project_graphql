@@ -1,7 +1,6 @@
 const Activity = require("../models/Activity");
 const dateUtils = require("../dateUtils.js");
 const t = dateUtils;
-console.log(t);
 
 const filterActivitiesByDay = (activity, day) => {
   return activity.filter((activity) => activity.day == day);
@@ -98,10 +97,10 @@ const activityResolvers = {
     getWeeklyActivities: async () => {
       const today = dateUtils.removeTime(new Date());
       const firstDay = new Date(
-        today.setDate(today.getDate() - today.getDay() + 1)
+        today.setDate(today.getDate() - today.getUTCDay())
       ); // Monday
       const lastDay = new Date(
-        today.setDate(today.getDate() - today.getDay() + 7)
+        today.setDate(today.getDate() - today.getUTCDay() + 6)
       ); // Sunday
 
       console.log(firstDay);
@@ -131,7 +130,7 @@ const activityResolvers = {
       );
 
       const steps = calculateTotalSteps(activities);
-
+      console.log(sunday);
       const dailyActivities = mapWeeklyActivities(
         monday[0],
         tuesday[0],
@@ -148,6 +147,7 @@ const activityResolvers = {
       };
     },
     getMonthlyActivities: async (_parent, args, _context, _info) => {
+      console.log("Book");
       const date = new Date(parseInt(args.date));
       console.log(date);
       const listRangeDate = dateUtils.getListOfDateRange(date);

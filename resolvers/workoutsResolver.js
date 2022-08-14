@@ -208,8 +208,16 @@ const resolvers = {
       const date = dateUtils.getDateRangeOfWeek(today.getWeek());
 
       console.log("date range: " + date.from + " - " + date.to);
+
+      const lastDay = new Date(date.to);
+      console.log(lastDay);
+
+      const last = new Date(
+        today.setDate(lastDay.getDate() - lastDay.getUTCDay() + 7)
+      );
+
       const workout = await Workout.find({
-        dateCreated: { $gte: date.from, $lt: date.to },
+        dateCreated: { $gte: date.from, $lte: last },
       });
 
       console.log(workout);

@@ -96,17 +96,12 @@ const activityResolvers = {
     },
     getWeeklyActivities: async () => {
       const today = dateUtils.removeTime(new Date());
-      const firstDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay())
-      ); // Monday
-      const lastDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 6)
-      ); // Sunday
+      const dates = dateUtils.getDateRangeOfWeek(today.getWeek());
 
-      console.log(firstDay);
-      console.log(lastDay);
+      console.log(dates.from);
+      console.log(dates.to);
       const activities = await Activity.find({
-        dateCreated: { $gte: firstDay, $lte: lastDay },
+        dateCreated: { $gte: dates.from, $lte: dates.to },
       });
       console.log(activities);
       const sunday = filterActivitiesByDay(activities, dateUtils.daysInWeek[0]);
@@ -147,7 +142,6 @@ const activityResolvers = {
       };
     },
     getMonthlyActivities: async (_parent, args, _context, _info) => {
-      console.log("Book");
       const date = new Date(parseInt(args.date));
       console.log(date);
       const listRangeDate = dateUtils.getListOfDateRange(date);

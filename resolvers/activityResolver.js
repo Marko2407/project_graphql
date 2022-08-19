@@ -82,11 +82,10 @@ function mapMonthlyActivities(activities, iterator) {
   };
 }
 
-const todayDate = dateUtils.removeTime(new Date());
-
 const activityResolvers = {
   Query: {
     getTodayActivity: async () => {
+      const todayDate = dateUtils.removeTime(new Date());
       const response = await Activity.findOne({ dateCreated: todayDate });
       console.log(response);
       return response;
@@ -165,9 +164,9 @@ const activityResolvers = {
 
   Mutation: {
     createNewTodayActivity: async (_parent, args, _context, _info) => {
+      const todayDate = dateUtils.removeTime(new Date());
       const steps = args.steps;
       if (steps == null) return null;
-
       return await new Activity({
         day: dateUtils.daysInWeek[todayDate.getDay()],
         steps: [steps],
@@ -176,6 +175,7 @@ const activityResolvers = {
       }).save();
     },
     updateTodayActivity: async (_parent, args, _context, _info) => {
+      const todayDate = dateUtils.removeTime(new Date());
       const steps = args.steps;
       const updates = {};
       if (steps == null) return null;

@@ -54,7 +54,7 @@ function mapWeeklyActivities(
 }
 
 function mapMonthlyActivities(activities, iterator) {
-  const weekNumber = "week " + iterator;
+  const weekNumber = "Tjedan " + iterator;
   const sunday = filterActivitiesByDay(activities, dateUtils.daysInWeek[0]);
   const monday = filterActivitiesByDay(activities, dateUtils.daysInWeek[1]);
   const tuesday = filterActivitiesByDay(activities, dateUtils.daysInWeek[2]);

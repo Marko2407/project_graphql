@@ -86,6 +86,7 @@ const activityResolvers = {
   Query: {
     getTodayActivity: async () => {
       const todayDate = dateUtils.removeTime(new Date());
+      console.log(todayDate);
       const response = await Activity.findOne({ dateCreated: todayDate });
       console.log(response);
       return response;

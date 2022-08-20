@@ -164,6 +164,7 @@ const resolvers = {
 
     getTodayWorkouts: async (_parent, args, _context, _info) => {
       const date = dateUtils.removeTime(new Date());
+      console.log(date);
       if (!dateUtils.isValidDate(date)) return [];
       const workouts = await Workout.find({ dateCreated: date });
       return workouts;

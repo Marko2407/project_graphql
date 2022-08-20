@@ -98,13 +98,9 @@ const activityResolvers = {
       const today = dateUtils.removeTime(new Date());
       const dates = dateUtils.getDateRangeOfWeek(today.getWeek());
 
-      console.log(today.getWeek());
-      console.log(dates.from);
-      console.log(dates.to);
       const activities = await Activity.find({
         dateCreated: { $gte: dates.from, $lte: dates.to },
       });
-      console.log(activities);
       const sunday = filterActivitiesByDay(activities, dateUtils.daysInWeek[0]);
       const monday = filterActivitiesByDay(activities, dateUtils.daysInWeek[1]);
       const tuesday = filterActivitiesByDay(
@@ -126,7 +122,6 @@ const activityResolvers = {
       );
 
       const steps = calculateTotalSteps(activities);
-      console.log(sunday);
       const dailyActivities = mapWeeklyActivities(
         monday[0],
         tuesday[0],

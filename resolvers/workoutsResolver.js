@@ -265,7 +265,7 @@ const resolvers = {
         searchResponseList.push({
           day: dateUtils.daysInWeek[date.getDay()],
           date: date,
-          workout: searchResult.filter((workout) => {
+          workouts: searchResult.filter((workout) => {
             return (
               new Date(Date.parse(workout.dateCreated)).toDateString() ==
               date.toDateString()

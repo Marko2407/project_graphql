@@ -27,7 +27,7 @@ const typeDefs = gql`
   type SearchResponse {
     day: String
     date: String
-    workout: [Workout]
+    workouts: [Workout]
   }
 
   type Activity {

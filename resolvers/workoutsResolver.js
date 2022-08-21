@@ -218,7 +218,7 @@ const resolvers = {
       );
 
       const workout = await Workout.find({
-        dateCreated: { $gte: date.from, $lte: last },
+        dateCreated: { $gte: date.from, $lte: date.to },
       });
 
       console.log(workout);

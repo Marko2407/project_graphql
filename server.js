@@ -30,10 +30,10 @@ async function startServer() {
     res.send("Hello from express appolo server");
   });
 
-  await mongoose.connect(DATABASE_URL, {
+  await mongoose.connect(MONGODB_URI, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
-    autoIndex: true
+    autoIndex: true,
   });
 
   console.log("Mongoose connected...");

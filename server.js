@@ -13,12 +13,13 @@ const workoutResolvers = require("./resolvers/workoutsResolver");
 const userResolvers = require("./resolvers/userResolver");
 const activitiesResolvers = require("./resolvers/activityResolver");
 const mongoose = require("mongoose");
+const unusedResolvers = require("./resolvers/unusedResolver");
 
 async function startServer() {
   const app = express();
   const apolloServer = new ApolloServer({
     typeDefs: typeDefs,
-    resolvers: [workoutResolvers, userResolvers, activitiesResolvers],
+    resolvers: [workoutResolvers, userResolvers, activitiesResolvers, unusedResolvers],
   });
 
   await apolloServer.start();
@@ -29,9 +30,10 @@ async function startServer() {
     res.send("Hello from express appolo server");
   });
 
-  await mongoose.connect(MONGODB_URI, {
+  await mongoose.connect(DATABASE_URL, {
     useUnifiedTopology: true,
     useNewUrlParser: true,
+    autoIndex: true
   });
 
   console.log("Mongoose connected...");

@@ -2,25 +2,35 @@ const User = require('../models/User');
 
 const userResolvers = {
   Query: {
-    getUser: async () => {
-      const user = await User.findOne();
+    loginUser: async (_parent, { username, password}, _context, _info) => {
+      const user = await User.findOne({
+        username: username,
+        password: password
+      });
       return user;
     },
-    getAllUsers: async () => {
-      const user = await User.find();
+    getUser: async (_parent, { userId }, _context, _info) => {
+      const user = await User.findById(userId);
       return user;
     },
   },
 
   Mutation: {
     createUser: async (_parent, args, _context, _info) => {
-      console.log(args)
-      const { firstName, lastName, weight, height } = args;
+      console.log(args);
+      const { firstName, lastName, weight, height, username, password } = args;
+
+      const data = await User.exists({username: username})
+        if(data != null) {
+          return null;
+        }
       const user = new User({
         firstName: firstName,
         lastName: lastName,
         weight: weight,
-        height: height
+        height: height,
+        username: username,
+        password: password
       });
       await user.save();
       return user;
@@ -51,7 +61,7 @@ const userResolvers = {
         new: true,
       });
       return user;
-    }
+    },
   },
 };
 

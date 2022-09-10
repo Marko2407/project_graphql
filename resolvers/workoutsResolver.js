@@ -3,7 +3,7 @@ const WeeklyWorkouts = require("../models/WeeklyWorkouts");
 const { response } = require("express");
 const dateUtils = require("../dateUtils.js");
 
-function findAnswer(list, terms) {
+function isDateAlreadyInList(list, terms) {
   let answer = false;
   list.forEach((e) => {
     if (e.getDate() == terms.getDate()) {
@@ -74,133 +74,16 @@ const mapWorkouts = (
 
 const resolvers = {
   Query: {
-    getAllWorkouts: async () => {
-      const workout = await Workout.find();
-      return workout;
-    },
-
-    getCurrentWeekWorkouts: async () => {
-      const today = dateUtils.removeTime(new Date());
-
-      const firstDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 1)
-      ); // Monday
-      const lastDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 7)
-      ); // Sunday
-
-      console.log(firstDay);
-      console.log(lastDay);
-      const workout = await Workout.find({
-        dateCreated: { $gte: firstDay, $lte: lastDay },
-      });
-      const sunday = filterWorkoutByDay(workout, dateUtils.daysInWeek[0]);
-      const monday = filterWorkoutByDay(workout, dateUtils.daysInWeek[1]);
-      const tuesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[2]);
-      const wednesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[3]);
-      const thursday = filterWorkoutByDay(workout, dateUtils.daysInWeek[4]);
-      const friday = filterWorkoutByDay(workout, dateUtils.daysInWeek[5]);
-      const saturday = filterWorkoutByDay(workout, dateUtils.daysInWeek[6]);
-
-      const weeklyWorkout = mapWorkouts(
-        monday,
-        tuesday,
-        wednesday,
-        thursday,
-        friday,
-        saturday,
-        sunday
-      );
-
-      return weeklyWorkout;
-    },
-
-    getWeeklykWorkoutsByDate: async (_parent, args, _context, _info) => {
-      const today = dateUtils.removeTime(new Date(args.date));
-      if (!dateUtils.isValidDate(today)) return [];
-      console.log(today);
-      const firstDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 1)
-      ); // Monday
-      const lastDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 7)
-      ); // Sunday
-
-      const workout = await Workout.find({
-        dateCreated: { $gte: firstDay, $lte: lastDay },
-      });
-
-      const sunday = filterWorkoutByDay(workout, dateUtils.daysInWeek[0]);
-      const monday = filterWorkoutByDay(workout, dateUtils.daysInWeek[1]);
-      const tuesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[2]);
-      const wednesday = filterWorkoutByDay(workout, dateUtils.daysInWeek[3]);
-      const thursday = filterWorkoutByDay(workout, dateUtils.daysInWeek[4]);
-      const friday = filterWorkoutByDay(workout, dateUtils.daysInWeek[5]);
-      const saturday = filterWorkoutByDay(workout, dateUtils.daysInWeek[6]);
-
-      const weeklyWorkout = mapWorkouts(
-        monday,
-        tuesday,
-        wednesday,
-        thursday,
-        friday,
-        saturday,
-        sunday
-      );
-
-      return weeklyWorkout;
-    },
-
-    getWorkoutById: async (_parent, { id }, _context, _info) => {
-      return await Workout.findById(id);
-    },
-
-    getWorkoutByDate: async (_parent, args, _context, _info) => {
-      const date = dateUtils.removeTime(new Date(args.date));
+    getTodayWorkouts: async (_parent, { userId, today }, _context, _info) => {
+      const date = dateUtils.removeTime(new Date(parseInt(today)));
       if (!dateUtils.isValidDate(date)) return [];
-      const workouts = await Workout.find({ dateCreated: date });
-      return workouts;
-    },
-
-    getTodayWorkouts: async (_parent, args, _context, _info) => {
-      const date = dateUtils.removeTime(new Date());
-      console.log(date);
-      if (!dateUtils.isValidDate(date)) return [];
-      const workouts = await Workout.find({ dateCreated: date });
-      return workouts;
-    },
-    getWorkoutByDateRange: async (_parent, args, _context, _info) => {
-      let beforeDate = dateUtils.removeTime(new Date(args.before));
-      let afterDate = dateUtils.removeTime(new Date(args.after));
-      if (!dateUtils.isValidDate(beforeDate)) {
-        beforeDate = dateUtils.removeTime(new Date(Date.now()));
-      }
-      if (!dateUtils.isValidDate(afterDate)) {
-        afterDate = dateUtils.removeTime(new Date(Date.now()));
-      }
-
       const workouts = await Workout.find({
-        dateCreated: { $gte: beforeDate, $lte: afterDate },
+        userId: userId,
+        dateCreated: date,
       });
+      console.log(workouts);
       return workouts;
     },
-    getAllWorkoutForCurrentWeek: async (_parent, _args, _context, _info) => {
-      const today = dateUtils.removeTime(new Date());
-      const firstDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 1)
-      ); // Monday
-      const lastDay = new Date(
-        today.setDate(today.getDate() - today.getUTCDay() + 7)
-      ); // Sunday
-
-      console.log(firstDay);
-      console.log(lastDay);
-      const workouts = await Workout.find({
-        dateCreated: { $gte: firstDay, $lte: lastDay },
-      }).sort({ dateCreated: +1 });
-      return workouts;
-    },
-
     getWorkoutForSelectedWeek: async (_parent, args, _context, _info) => {
       const today = dateUtils.removeTime(new Date(parseInt(args.date)));
       console.log(today);
@@ -218,6 +101,7 @@ const resolvers = {
       );
 
       const workout = await Workout.find({
+        userId: args.userId,
         dateCreated: { $gte: date.from, $lte: date.to },
       });
 
@@ -245,7 +129,9 @@ const resolvers = {
     },
 
     getWorkoutBySearchInput: async (_parent, args, _context, _info) => {
+      console.log(args.searchInput);
       const searchResult = await Workout.find({
+        userId: args.userId,
         $or: [
           { title: { $regex: args.searchInput, $options: "i" } },
           { description: { $regex: args.searchInput, $options: "i" } },
@@ -255,12 +141,15 @@ const resolvers = {
       let searchResponseList = [];
       let dateCreationMap = [];
 
+      //Provjerava da li se datum vec nalazi unutar liste, (sprjecava dupliciranje datuma)
       searchResult.forEach((response) => {
-        if (!findAnswer(dateCreationMap, response.dateCreated)) {
+        if (!isDateAlreadyInList(dateCreationMap, response.dateCreated)) {
+          //ako datum ne postoji u listi ubaci novi
           dateCreationMap.push(response.dateCreated);
         }
       });
 
+      // Grupiraj podatke po istom datumu
       dateCreationMap.forEach((date) => {
         searchResponseList.push({
           day: dateUtils.daysInWeek[date.getDay()],
@@ -290,8 +179,10 @@ const resolvers = {
       date = dateUtils.removeTime(date);
       const dayt = dateUtils.daysInWeek[date.getDay()];
 
-      const { day, title, description, dateCreated, reps, series } = args;
+      const { userId, day, title, description, dateCreated, reps, series } =
+        args;
       const workout = new Workout({
+        userId: userId,
         day: dayt,
         title: title,
         description: description,
@@ -300,35 +191,6 @@ const resolvers = {
         series: series,
       });
       await workout.save();
-      return workout;
-    },
-
-    deleteWorkout: async (_paret, args, _context, _info) => {
-      const { id } = args;
-      await Workout.findByIdAndDelete(id);
-      return true;
-    },
-
-    updateWorkout: async (_paret, args, _context, _info) => {
-      const { id } = args;
-      const { title } = args;
-      const { description } = args;
-      const { dateCreated } = args;
-      const updates = {};
-      if (title !== undefined) {
-        updates.title = title;
-      }
-      if (description !== undefined) {
-        updates.description = description;
-      }
-      if (dateCreated !== undefined) {
-        updates.dateCreated = dateUtils.removeTime(new Date(dateCreated));
-        updates.day = dateUtils.daysInWeek[updates.dateCreated.getDay()];
-      }
-
-      const workout = await Workout.findByIdAndUpdate(id, updates, {
-        new: true,
-      });
       return workout;
     },
   },

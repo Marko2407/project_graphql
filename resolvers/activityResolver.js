@@ -84,21 +84,19 @@ function mapMonthlyActivities(activities, iterator) {
 
 const activityResolvers = {
   Query: {
-    getTodayActivity: async () => {
+    getTodayActivity: async (_parent, args, _context, _info) => {
       const todayDate = dateUtils.removeTime(new Date());
       console.log(todayDate);
-      const response = await Activity.findOne({ dateCreated: todayDate });
-      console.log(response);
+      console.log(args.userId)
+      const response = await Activity.findOne({  userId: args.userId ,dateCreated: todayDate });
       return response;
     },
-    getAllActivities: async () => {
-      return await Activity.find();
-    },
-    getWeeklyActivities: async () => {
+    getWeeklyActivities: async (_parent, args, _context, _info) => {
       const today = dateUtils.removeTime(new Date());
       const dates = dateUtils.getDateRangeOfWeek(today.getWeek());
 
       const activities = await Activity.find({
+        userId: args.userId,
         dateCreated: { $gte: dates.from, $lte: dates.to },
       });
       const sunday = filterActivitiesByDay(activities, dateUtils.daysInWeek[0]);
@@ -120,7 +118,7 @@ const activityResolvers = {
         activities,
         dateUtils.daysInWeek[6]
       );
-
+      
       const steps = calculateTotalSteps(activities);
       const dailyActivities = mapWeeklyActivities(
         monday[0],
@@ -131,7 +129,6 @@ const activityResolvers = {
         saturday[0],
         sunday[0]
       );
-
       return {
         activities: dailyActivities,
         totalSteps: steps,
@@ -144,6 +141,7 @@ const activityResolvers = {
       let activities = [];
       for (let i = 0; i < listRangeDate.length; i++) {
         const response = await Activity.find({
+          userId: args.userId,
           dateCreated: {
             $gte: listRangeDate[i].firstDay,
             $lte: listRangeDate[i].lastDay,
@@ -164,6 +162,7 @@ const activityResolvers = {
       const steps = args.steps;
       if (steps == null) return null;
       return await new Activity({
+        userId: args.userId,
         day: dateUtils.daysInWeek[todayDate.getDay()],
         steps: [steps],
         totalSteps: steps,
@@ -175,33 +174,14 @@ const activityResolvers = {
       const steps = args.steps;
       const updates = {};
       if (steps == null) return null;
-      const todayActivity = await Activity.findOne({ dateCreated: todayDate });
+      const todayActivity = await Activity.findOne({  userId: args.userId ,dateCreated: todayDate });
       if (todayActivity != null) {
         let stepsArray = todayActivity.steps;
         stepsArray.push(steps);
-
         updates.steps = stepsArray;
         updates.totalSteps = getTotalSteps(stepsArray);
 
         return await Activity.findByIdAndUpdate(todayActivity.id, updates, {
-          new: true,
-        });
-      }
-      return todayWorkout;
-    },
-    updateActivityById: async (_parent, args, _context, _info) => {
-      const steps = args.steps;
-      const updates = {};
-      if (steps == null) return null;
-      const activity = await Activity.findById(args.id);
-      if (activity != null) {
-        let stepsArray = activity.steps;
-        stepsArray.push(steps);
-
-        updates.steps = stepsArray;
-        updates.totalSteps = getTotalSteps(stepsArray);
-
-        return await Activity.findByIdAndUpdate(activity.id, updates, {
           new: true,
         });
       }

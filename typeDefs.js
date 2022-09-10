@@ -3,6 +3,7 @@ const { gql } = require("apollo-server-express");
 const typeDefs = gql`
   type Workout {
     id: ID
+    userId: ID
     day: String
     title: String
     description: String
@@ -22,6 +23,8 @@ const typeDefs = gql`
     lastName: String
     weight: Int
     height: Int
+    username: String
+    password: String
   }
 
   type SearchResponse {
@@ -32,6 +35,7 @@ const typeDefs = gql`
 
   type Activity {
     id: ID
+    userId: ID
     day: String
     dateCreated: String
     steps: [Int]
@@ -48,6 +52,7 @@ const typeDefs = gql`
   }
 
   type MonthlyActivities {
+    userId: ID
     week: String
     weeklyActivities: [Activity]
     totalSteps: Int
@@ -59,60 +64,72 @@ const typeDefs = gql`
   }
 
   type Query {
-    getAllWorkouts: [Workout]
-    getCurrentWeekWorkouts: [WeeklyWorkouts]
-    getWeeklykWorkoutsByDate(date: String): [WeeklyWorkouts]
+    getTodayWorkouts(userId: ID, today: String): [Workout]
+    getWorkoutBySearchInput(searchInput: String, userId: ID): [SearchResponse]
+    getWorkoutForSelectedWeek(date: String, userId: ID): [WeeklyWorkouts]
+
+    loginUser(username: String, password: String): User
+    getUser(userId: ID): User
+
+    getTodayActivity(userId: String): Activity
+    getWeeklyActivities(userId: String): ActivityWithTotalSteps
+    getMonthlyActivities(date: String, userId: String): [MonthlyActivities]
+
+    #NE KORISTI SE
+    getAllWorkouts(userId: ID): [Workout]
+    getCurrentWeekWorkouts(userId: ID): [WeeklyWorkouts]
+    getWeeklykWorkoutsByDate(date: String, userId: ID): [WeeklyWorkouts]
     getWorkoutById(id: ID): Workout
     getWorkoutByDate(date: String): [Workout]
-    getTodayWorkouts: [Workout]
-    getWorkoutByDateRange(before: String, after: String): [Workout]
-    getAllWorkoutForCurrentWeek: [Workout]
-    getWorkoutBySearchInput(searchInput: String): [SearchResponse]
-    getWorkoutForSelectedWeek(date: String): [WeeklyWorkouts]
-
-    getUser: User
+    getWorkoutByDateRange(before: String, after: String, userId: ID): [Workout]
+    getAllWorkoutForCurrentWeek(userId: ID): [Workout]
     getAllUsers: [User]
-
-    getTodayActivity: Activity
-    getAllActivities: [Activity]
-    getWeeklyActivities: ActivityWithTotalSteps
-    getMonthlyActivities(date: String): [MonthlyActivities]
+    getAllActivities(userId: String): [Activity]
   }
 
   type Mutation {
+    #WORKOUTS
     createWorkout(
+      userId: ID
       day: String
       title: String
       description: String
       dateCreated: String
       reps: Int
       series: Int
+      username: String
+      password: String
     ): Workout
-    deleteWorkout(id: ID): Boolean
+
+    #USER
+    createUser(
+      firstName: String
+      lastName: String
+      weight: Int
+      height: Int
+      username: String
+      password: String
+    ): User
+    deleteUser(id: ID): Boolean
+    updateUser(
+      id: String
+      firstName: String
+      lastName: String
+      weight: Int
+      height: Int
+    ): User
+    #ACTIVITY
+    createNewTodayActivity(steps: Int, userId: String): Activity
+    updateTodayActivity(steps: Int, userId: String): Activity
+
+    #NE KORISTI SE
     updateWorkout(
       id: ID
       title: String
       description: String
       dateCreated: String
     ): Workout
-
-    createUser(
-      firstName: String
-      lastName: String
-      weight: Int
-      height: Int
-    ): User
-    deleteUser(id: ID): Boolean
-    updateUser(
-      id: ID
-      firstName: String
-      lastName: String
-      weight: Int
-      height: Int
-    ): User
-
-    createNewTodayActivity(steps: Int): Activity
-    updateTodayActivity(steps: Int): Activity
+    deleteWorkout(id: ID): Boolean
     updateActivityById(id: ID, steps: Int): Activity
   }
 `;

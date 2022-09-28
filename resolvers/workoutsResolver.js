@@ -1,7 +1,7 @@
-const Workout = require("../models/Workout");
-const WeeklyWorkouts = require("../models/WeeklyWorkouts");
-const { response } = require("express");
-const dateUtils = require("../dateUtils.js");
+const Workout = require('../models/Workout');
+const WeeklyWorkouts = require('../models/WeeklyWorkouts');
+const { response } = require('express');
+const dateUtils = require('../dateUtils.js');
 
 function isDateAlreadyInList(list, terms) {
   let answer = false;
@@ -91,7 +91,7 @@ const resolvers = {
 
       const date = dateUtils.getDateRangeOfWeek(today.getWeek());
 
-      console.log("date range: " + date.from + " - " + date.to);
+      console.log('date range: ' + date.from + ' - ' + date.to);
 
       const lastDay = new Date(date.to);
       console.log(lastDay);
@@ -133,8 +133,8 @@ const resolvers = {
       const searchResult = await Workout.find({
         userId: args.userId,
         $or: [
-          { title: { $regex: args.searchInput, $options: "i" } },
-          { description: { $regex: args.searchInput, $options: "i" } },
+          { title: { $regex: args.searchInput, $options: 'i' } },
+          { description: { $regex: args.searchInput, $options: 'i' } },
         ],
       });
 

@@ -61,3 +61,62 @@ Query documentation :
      
 
     getWorkoutForSelectedWeek(weeklyOffset: Int):[WeeklyWorkouts] - get list of weekly workouts. weeklyOffset is data of type Integer which is used to subract week from current to a certain week from which is created date range. With new date range is created query for receiving workouts.
+    
+    
+    
+Queries:     
+    
+      getTodayWorkouts(…):[Workout]
+
+      getWorkoutBySearchInput(…): [SearchResponse]
+
+      getWorkoutForSelectedWeek(…):[WeeklyWorkouts]
+
+      loginUser(…): User
+
+      getUser(…): User
+
+      getTodayActivity(…):Activity
+
+      getWeeklyActivities(…):ActivityWithTotalSteps
+
+      getMonthlyActivities(…): [MonthlyActivities]
+
+      getAllWorkouts(…):[Workout]
+
+      getCurrentWeekWorkouts(…):[WeeklyWorkouts]
+
+      getWeeklykWorkoutsByDate(…):[WeeklyWorkouts]
+
+      getWorkoutById(…):Workout
+
+      getWorkoutByDate(…):[Workout]
+
+      getWorkoutByDateRange(…):[Workout]
+
+      getAllWorkoutForCurrentWeek(…):[Workout]
+
+      getAllUsers:[User]
+
+      getAllActivities(…): [Activity]
+
+
+Mutation: 
+
+      createWorkout(…): Workout
+
+      createUser(…): User
+
+      deleteUser(…): Boolean
+
+      updateUser(…): User
+
+      createNewTodayActivity(…): Activity
+
+      updateTodayActivity(…): Activity
+
+      updateWorkout(…): Workout
+
+      deleteWorkout(…): Boolean
+
+      updateActivityById(…): Activity
